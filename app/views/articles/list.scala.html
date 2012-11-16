@@ -1,0 +1,11 @@
+@(articles: List[Article])(implicit lang: Lang) 
+@main(Messages("application.name")) { 
+  <dl class="articles"> 
+    @for(article <- articles) {  
+      <dt>@article.id</dt> 
+      <dd>@article.title</dd> 
+      <dd>@article.content</dd> 
+    } 
+  </dl> 
+} 
+
