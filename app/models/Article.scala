@@ -18,13 +18,7 @@ object Article {
   val twitter = tf.getInstance()
 
   def findAll = { 
-    var articles = List[Article]()
-    val it = twitter.getHomeTimeline.iterator
-    while (it.hasNext) {
-      val status = it.next
-      articles  = Article(1, status.getUser.getName, status.getText) :: articles
-    }
-    articles
+    twitter.getHomeTimeline.iterator.toList.map { s => Article(s.getId, s.getUser.getName, s.getText) } 
   }
 }
 
