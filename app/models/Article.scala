@@ -15,7 +15,7 @@ object Article {
     val tweets = twitter.getHomeTimeline(new Paging(1,100)).iterator.toList.filterNot { _.getURLEntities.isEmpty }
     tweets.foldLeft(Map[String, List[Tweet]]() withDefaultValue List[Tweet]()){
       (m,s) => m + (s.getURLEntities.head.getDisplayURL -> (m(s.getURLEntities.head.getDisplayURL) ++ List(Tweet(s.getUser.getName, s.getText)) ) )
-    }.map{ case (k,v) => Article(k,v) }.toList
+    }.map{ case (k,v) => Article(k,v) }.toList sortBy { a => (-a.tweets.size, a.url) }
   }
 }
 
