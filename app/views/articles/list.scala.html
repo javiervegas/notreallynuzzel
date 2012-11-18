@@ -2,8 +2,8 @@
 @main(Messages("application.name")) { 
   <dl class="articles"> 
     @for(article <- articles) {  
-      <dt>@article.id</dt> 
-      <dd>@article.title</dd> 
+      <dt>@article.url</dt> 
+      <dd>@article.author</dd> 
       <dd>@article.content</dd> 
     } 
   </dl> 
