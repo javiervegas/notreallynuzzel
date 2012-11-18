@@ -4,8 +4,8 @@
     @for(article <- articles) {  
       <dt>@article.url</dt> 
       @for(tweet <- article.tweets) {  
-        <dd>author: @tweet.author</dd> 
-        <dd>content: @tweet.content</dd> 
+        <dd><img src="@tweet.getUser.getProfileImageURL" alt="@tweet.getUser.getScreenName"> 
+        @tweet.getText</dd> 
       }
     } 
   </dl> 
