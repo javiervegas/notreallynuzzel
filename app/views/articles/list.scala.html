@@ -3,8 +3,10 @@
   <dl class="articles"> 
     @for(article <- articles) {  
       <dt>@article.url</dt> 
-      <dd>@article.author</dd> 
-      <dd>@article.content</dd> 
+      @for(tweet <- article.tweets) {  
+        <dd>author: @tweet.author</dd> 
+        <dd>content: @tweet.content</dd> 
+      }
     } 
   </dl> 
 } 
