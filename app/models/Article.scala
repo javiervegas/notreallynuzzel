@@ -23,8 +23,7 @@ case class Article(url:String, tweets:List[Status]) {
   def title = {
     println("TITLE FOR "+url)
     try {
-      val doc = Jsoup.parse(content)
-      doc.title
+      Jsoup.parse(content).getElementsByTag("h1").text
     } catch {
       case e:Exception => "FAILED TITLE"
     }
