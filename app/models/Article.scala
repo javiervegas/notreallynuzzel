@@ -37,6 +37,7 @@ case class Article(url:String, tweets:List[Status]) {
   }
 
   lazy val info = Await.result(content, 10 minute).asInstanceOf[Option[(String,String)]]
+  val domain = url.replaceAll(""".+//""","").replaceAll("""/.*""","")
 }
 object Article {
   
