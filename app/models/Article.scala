@@ -17,36 +17,20 @@ case class Article(url:String, tweets:List[Status]) {
       val (responseCode, headers, content) = Http(url).option(HttpOptions.connTimeout(1000)).option(HttpOptions.readTimeout(5000)).asHeadersAndParse(Http.readString)
       println("fut: after downloading "+url)
       if (headers.getOrElse("Content-Type",headers.getOrElse("Content-type","UNKNOWN")).startsWith("text")) {
-        content
+        val parsed = Jsoup.parse(content)
+        parsed.title+"*"+parsed.getElementsByTag("h1").text
       } else {
-        "Non html"
+        None
       }
     } catch {
       case e:Exception => { 
         println(e.toString)
-        e.toString
+        None
       }
     }
   }
 
-  def title = {
-    println("awaiting "+url)
-    val conten = Await.result(content, 10 minute)
-    println("obtained "+url)
-    try {
-      val parsed = Jsoup.parse(conten)
-      val h1 = parsed.getElementsByTag("h1").text
-      val boo = if (h1.isEmpty) {
-        parsed.title
-      } else {
-        h1
-      }
-      println("parsed "+url)
-      boo
-    } catch {
-      case e:Exception => "FAILED TITLE for "+url+conten+e.toString
-    }
-  }
+  lazy val title = Await.result(content, 10 minute)
 }
 object Article {
   
@@ -56,7 +40,7 @@ object Article {
     val tweets = twitter.getHomeTimeline(new Paging(1,100)).iterator.toList
     tweets.filterNot { _.getURLEntities.isEmpty }.foldLeft(Map[String, List[Status]]() withDefaultValue List[Status]()){
       (m,s) => m + (s.getURLEntities.head.getExpandedURL.toString -> (m(s.getURLEntities.head.getExpandedURL.toString) ++ List(s)) )
-    }.map{ case (k,v) => Article(k,v) }.toList sortBy { a => (-a.tweets.size, a.url) }
+    }.map{ case (k,v) => Article(k,v) }.filterNot { _.title==None }.toList sortBy { a => (-a.tweets.size, a.url) }
   }
 }
 
