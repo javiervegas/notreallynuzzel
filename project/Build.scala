@@ -10,7 +10,8 @@ object ApplicationBuild extends Build {
     val appDependencies = Seq(
       // Add your project dependencies here,
       "org.twitter4j" % "twitter4j-core" % "[2.2,)",
-      "org.scalaj" %% "scalaj-http" % "0.3.2"
+      "org.scalaj" %% "scalaj-http" % "0.3.2",
+      "org.jsoup" % "jsoup" % "0.2.1b"
     )
 
     val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
