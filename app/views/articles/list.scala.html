@@ -1,14 +1,19 @@
 @(articles: List[Article])(implicit lang: Lang) 
 @main(Messages("application.name")) { 
-  <dl class="articles"> 
+  <div class="panel eight columns">
     @for(article <- articles) {  
-      <dt><a href="@article.url" target="_blank">Title: @article.info.get._1</a></dt> 
-      <dd>@article.domain - @article.info.get._2 ...
+      <div class="row">
+        <div class="twelve columns subheader"><a href="@article.url" target="_blank">@article.info.get._1</a></div> 
+        <div class="twelve columns">@article.domain - @article.info.get._2 ...</div>
+      </div>
       @for(tweet <- article.tweets) {  
-        <dd><img src="@tweet.getUser.getProfileImageURL" alt="@tweet.getUser.getScreenName"> 
-        @tweet.getText</dd> 
+        <div class="row">
+          <div class="two columns"><img src="@tweet.getUser.getProfileImageURL" alt="@tweet.getUser.getScreenName"></div>
+          <div class="ten columns">@tweet.getText</div> 
+        </div>
       }
+      <div class="ten columns centered"><hr></div>
     } 
-  </dl> 
+  </div> 
 } 
 
