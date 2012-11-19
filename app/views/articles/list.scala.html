@@ -2,7 +2,7 @@
 @main(Messages("application.name")) { 
   <dl class="articles"> 
     @for(article <- articles) {  
-      <dt>@article.html</dt> 
+      <dt>@article.title</dt> 
       @for(tweet <- article.tweets) {  
         <dd><img src="@tweet.getUser.getProfileImageURL" alt="@tweet.getUser.getScreenName"> 
         @tweet.getText</dd> 
