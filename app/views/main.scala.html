@@ -4,25 +4,21 @@
 <head> 
   <title>@title</title>  
   <link rel="stylesheet" type="text/css" media="screen" 
-     href='@routes.Assets.at("stylesheets/bootstrap.css")'> 
-  <link rel="stylesheet" media="screen" 
-     href="@routes.Assets.at("stylesheets/main.css")"> 
+     href='@routes.Assets.at("stylesheets/foundation.css")'> 
+  <link rel="stylesheet" type="text/css" media="screen" 
+     href="@routes.Assets.at("stylesheets/app.css")"> 
 </head> 
-<body> 
-<div class="screenshot"> 
-  <div class="navbar navbar-fixed-top"> 
-    <div class="navbar-inner"> 
-      <div class="container"> 
-        <a class="brand" href="@routes.Application.index()"> 
-          @Messages("application.name") 
-        </a> 
-      </div> 
-    </div> 
+<body class="off canvas">
+  <div class="container top-bar home-border header">
+      <a href="@routes.Application.index()"> 
+        @Messages("application.name") 
+      </a> 
+  </div>
+  <div class="row"> 
+    <section role="main"> 
+      @content  
+      @debug()
+    </section> 
   </div> 
-  <div class="container"> 
-    @content  
-    @debug()
-  </div> 
-</div> 
 </body> 
 </html>
