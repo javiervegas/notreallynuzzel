@@ -19,11 +19,12 @@ case class Article(url:String, tweets:List[Status]) {
       if (headers.getOrElse("Content-Type",headers.getOrElse("Content-type","UNKNOWN")).startsWith("text")) {
         val parsed = Jsoup.parse(content)
         val h1 = parsed.getElementsByTag("h1").text
-        if (h1.isEmpty) {
-          Some(parsed.title)
+        val title = if (h1.isEmpty) {
+          parsed.title
         } else {
-          Some(h1)
+          h1
         }
+        Some(title, parsed.getElementsByTag("p").text.substring(0,280))
       } else {
         None
       }
@@ -35,7 +36,7 @@ case class Article(url:String, tweets:List[Status]) {
     }
   }
 
-  lazy val title = Await.result(content, 10 minute).asInstanceOf[Option[String]]
+  lazy val info = Await.result(content, 10 minute).asInstanceOf[Option[(String,String)]]
 }
 object Article {
   
@@ -45,7 +46,7 @@ object Article {
     val tweets = twitter.getHomeTimeline(new Paging(1,100)).iterator.toList
     tweets.filterNot { _.getURLEntities.isEmpty }.foldLeft(Map[String, List[Status]]() withDefaultValue List[Status]()){
       (m,s) => m + (s.getURLEntities.head.getExpandedURL.toString -> (m(s.getURLEntities.head.getExpandedURL.toString) ++ List(s)) )
-    }.map{ case (k,v) => Article(k,v) }.filter { _.title.isDefined }.toList sortBy { a => (-a.tweets.size, a.url) }
+    }.map{ case (k,v) => Article(k,v) }.filter { _.info.isDefined }.toList sortBy { a => (-a.tweets.size, a.url) }
   }
 }
 
