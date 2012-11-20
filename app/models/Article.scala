@@ -15,36 +15,32 @@ case class Article(url:String) {
   implicit val ec = ExecutionContext.fromExecutorService(pool)
   val content = Future {
     try {
-      println("fut: before downloading "+url)
       val (responseCode, headers, content) = Http(url).option(HttpOptions.connTimeout(1000)).option(HttpOptions.readTimeout(5000)).asHeadersAndParse(Http.readString)
-      println("fut: after downloading "+url)
+      println("downloaded "+url)
       if (responseCode==200 && headers.getOrElse("Content-Type",headers.getOrElse("Content-type","UNKNOWN")).startsWith("text")) {
         val parsed = Jsoup.parse(content)
-        val h1 = parsed.getElementsByTag("h1").text
-        val title = if (h1.isEmpty) {
-          parsed.title
-        } else {
-          h1
+        val (title, domain) = parsed.title.split("""\|""") match {
+          case Array(title,domain) => (title, domain)
+          case Array(title) => (title, url.replaceAll(""".+//""","").replaceAll("""/.*""",""))
+        }
+        val summary = parsed.getElementsByTag("p").text match {
+          case s:String if s.isEmpty => title
+          case s:String if (s.length < 230) => s
+          case s:String => s.substring(0,280)
         } 
-        val summary = try {
-          parsed.getElementsByTag("p").text.substring(0,280)
-        } catch {
-          case e:Exception => e.toString
-        } 
-        Some(title, summary)
+        Some(title, summary, domain)
       } else {
         None
       }
     } catch {
       case e:Exception => { 
-        println(e.toString)
+        println(url+" -> "+e.toString)
         None
       }
     }
   }
 
-  lazy val info = Await.result(content, 10 minute).asInstanceOf[Option[(String,String)]]
-  val domain = url.replaceAll(""".+//""","").replaceAll("""/.*""","")
+  lazy val info = Await.result(content, 10 minute).asInstanceOf[Option[(String,String,String)]]
 }
 
 case class ArticleWithTweets(article:Article, tweets:List[Status])
