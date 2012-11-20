@@ -60,7 +60,7 @@ object Article {
     }.map{ case (k,v) => ArticleWithTweets(Article.find(k),v) }.filter { _.article.info.isDefined }.toList sortBy { a => (-a.tweets.size, -a.tweets.head.getCreatedAt.getTime) }
   } 
   def find(url:String) = {
-    Cache.get("article-X" + url) match { 
+    Cache.get("article-" + url) match { 
       case Some(article:Article) => article 
       case None => {
         val article = Article(url)
