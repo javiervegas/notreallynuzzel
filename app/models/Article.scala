@@ -50,7 +50,7 @@ object Article {
   val twitter = (new TwitterFactory).getInstance
 
   def findAll = { 
-    val tweets = twitter.getHomeTimeline(new Paging(1,100)).iterator.toList
+    val tweets = twitter.getHomeTimeline(new Paging(1,40)).iterator.toList
     tweets.filterNot { _.getURLEntities.isEmpty }.foldLeft(Map[String, List[Status]]() withDefaultValue List[Status]()){
       (m,s) => m + (s.getURLEntities.head.getExpandedURL.toString -> (m(s.getURLEntities.head.getExpandedURL.toString) ++ List(s)) )
     }.map{ case (k,v) => ArticleWithTweets(Article.find(k),v) }.filter { _.article.info.isDefined }.toList sortBy { a => (-a.tweets.size, -a.tweets.head.getCreatedAt.getTime) }
