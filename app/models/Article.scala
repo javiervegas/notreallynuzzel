@@ -62,10 +62,12 @@ object Article {
   val twitter = (new TwitterFactory).getInstance
   val rt = Cache.get("request_token").asInstanceOf[Option[RequestToken]] match { case Some(r:RequestToken) => r }
   val ov = Cache.get("oauth_verifier").asInstanceOf[Option[String]] match { case Some(r:String) => r }
-  twitter.getOAuthAccessToken(rt, ov)
+  val token = twitter.getOAuthAccessToken(rt, ov)
+  println("from callback: id:"+twitter.verifyCredentials().getId()+" token:"+token.getToken+" secret:"+token.getTokenSecret)
 
   def findAll = { 
-    val tweets = twitter.getHomeTimeline(new Paging(1,40)).iterator.toList
+    val tweets = twitter.getHomeTimeline(new Paging(1, 500)).iterator.toList
+    println("got tweets:"+tweets.size)
     val aggregatedAndSorted = tweets.filterNot { _.getURLEntities.isEmpty }.foldLeft(Map[String, List[Status]]() withDefaultValue List[Status]()){
       (m,s) => m + (s.getURLEntities.head.getExpandedURL.toString -> (m(s.getURLEntities.head.getExpandedURL.toString) ++ List(s)) )
     }.map{ case (k,v) => ArticleWithTweets(Article.findByURL(k),v) }.toList sortBy { a => (-a.tweets.size, -a.tweets.head.getCreatedAt.getTime) }
