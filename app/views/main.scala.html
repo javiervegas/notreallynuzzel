@@ -7,10 +7,14 @@
      href='@routes.Assets.at("stylesheets/foundation.css")'> 
   <link rel="stylesheet" type="text/css" media="screen" 
      href="@routes.Assets.at("stylesheets/app.css")"> 
+  <script src='@routes.Assets.at("javascripts/jquery-1.7.1.min.js")' 
+    type='text/javascript'></script>
+  <script src='@routes.Assets.at("javascripts/articles.js")' 
+    type='text/javascript'></script>
 </head> 
 <body class="off canvas">
   <div class="container top-bar home-border header">
-      <a href="@routes.Articles.list()"> 
+      <a href="@routes.Application.index()"> 
         @Messages("application.name") 
       </a> 
   </div>
