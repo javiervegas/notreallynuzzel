@@ -25,6 +25,6 @@ jQuery ($) ->
       $.get url, (article) -> 
          loading.hide()
          panel.prepend $('<div class="row"/>').append $('<div class="twelve columns summary"/>').text(article.domain+" - "+article.summary+" ...") 
-         panel.prepend $('<div class="row"/>').append $('<div class="twelve columns subheader"/>').text(article.title) 
+         panel.prepend $('<div class="row"/>').append $('<div class="twelve columns subheader"/>').append $('<a/>').attr('href',article.url).text(article.title) 
 
    loadArticleDiv() 
