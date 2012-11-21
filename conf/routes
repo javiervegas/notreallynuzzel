@@ -4,6 +4,7 @@
 
 # Home page
 GET     /                           controllers.Application.index
+GET     /callback                   controllers.Application.callback
 
 GET /articles	controllers.Articles.list
 GET /articles/:url	controllers.Articles.details(url: String) 

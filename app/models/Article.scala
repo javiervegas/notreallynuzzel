@@ -10,6 +10,7 @@ import play.api.Play.current
 import scala.collection.JavaConversions._
 import scalaj.http.{Http,HttpOptions}
 import twitter4j._
+import twitter4j.auth.RequestToken
 
 case class Article(url:String) {
 
@@ -59,6 +60,9 @@ case class ArticleWithTweets(article:Article, tweets:List[Status]) {
 object Article {
   
   val twitter = (new TwitterFactory).getInstance
+  val rt = Cache.get("request_token").asInstanceOf[Option[RequestToken]] match { case Some(r:RequestToken) => r }
+  val ov = Cache.get("oauth_verifier").asInstanceOf[Option[String]] match { case Some(r:String) => r }
+  twitter.getOAuthAccessToken(rt, ov)
 
   def findAll = { 
     val tweets = twitter.getHomeTimeline(new Paging(1,40)).iterator.toList
