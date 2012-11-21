@@ -70,8 +70,9 @@ object Article {
     println("got tweets:"+tweets.size)
     val aggregatedAndSorted = tweets.filterNot { _.getURLEntities.isEmpty }.foldLeft(Map[String, List[Status]]() withDefaultValue List[Status]()){
       (m,s) => m + (s.getURLEntities.head.getExpandedURL.toString -> (m(s.getURLEntities.head.getExpandedURL.toString) ++ List(s)) )
-    }.map{ case (k,v) => ArticleWithTweets(Article.findByURL(k),v) }.toList sortBy { a => (-a.tweets.size, -a.tweets.head.getCreatedAt.getTime) }
-    ArticleWithTweetsCollection(aggregatedAndSorted)
+    }.toList.sortBy{ case (k,v) => (-v.size, -v.head.getCreatedAt.getTime) }
+    val top_articles = aggregatedAndSorted.take(20).map{ case (k,v) => ArticleWithTweets(Article.findByURL(k),v) }
+    ArticleWithTweetsCollection(top_articles)
   } 
 
   def findByURL(url:String) = {
@@ -111,16 +112,17 @@ object ArticleWithTweetsCollection {
   implicit object ArticleWithTweetsCollectionWrites extends Writes[ArticleWithTweetsCollection] { 
     def writes(awtc:ArticleWithTweetsCollection) = Json.toJson( 
       awtc.awtl.map { awt =>
-        val tweet = awt.tweets.head
-        val user = tweet.getUser
+        val tweets = awt.tweets
         Map( 
           "json_url" -> Json.toJson(awt.json_url),
-          "tweet" -> Json.toJson(tweet.getText),
-          "created_at" ->  Json.toJson(tweet.getCreatedAt.toString),
-          "profile_image" ->  Json.toJson(user.getProfileImageURL.toString),
-          "user_name" ->  Json.toJson(user.getName),
-          //"user_url" ->  Json.toJson(user.getURL.toString),
-          "user_screenname" ->  Json.toJson(user.getScreenName)
+          "tweets" -> Json.toJson(tweets.map { tweet => Map(
+            "tweet" -> Json.toJson(tweet.getText),
+            "created_at" ->  Json.toJson(tweet.getCreatedAt.toString),
+            "profile_image" ->  Json.toJson(tweet.getUser.getProfileImageURL.toString),
+            "user_name" ->  Json.toJson(tweet.getUser.getName),
+            //"user_url" ->  Json.toJson(tweet.getUser.getURL.toString),
+            "user_screenname" ->  Json.toJson(tweet.getUser.getScreenName)
+          ) })
         ) 
       }
     ) 

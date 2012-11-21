@@ -10,10 +10,11 @@ jQuery ($) ->
             panel  = $('<div class="panel"/>') 
             $div.append panel
             loadArticleDetails(hidden, panel)  
-            twrow = $('<div class="row"/>')
-            twrow.append $('<div class="two columns"/>').html("<img src="+art["profile_image"]+" alt="+art["user_name"]+"/>")
-            twrow.append $('<div class="ten columns"/>').html("<a href="+art["profile_image"]+">"+art["user_name"]+"</a> - "+art["tweet"]+"<br/>"+art["created_at"])
-            panel.append twrow
+            $.each art["tweets"], (index, tweet) ->
+              twrow = $('<div class="row"/>')
+              twrow.append $('<div class="two columns"/>').html("<img src="+tweet["profile_image"]+" alt="+tweet["user_name"]+"/>")
+              twrow.append $('<div class="ten columns"/>').html("<a href="+tweet["profile_image"]+">"+tweet["user_name"]+"</a> - "+tweet["tweet"]+"<br/>"+tweet["created_at"])
+              panel.append twrow
 
    articleDetailsUrl = (url) -> 
       $table.data('details').replace '0', url 
