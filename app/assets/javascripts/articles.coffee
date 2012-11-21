@@ -18,11 +18,12 @@ jQuery ($) ->
    articleDetailsUrl = (url) -> 
       $table.data('details').replace '0', url 
 
-   loadArticleDetails = (hidden, panel, loading) -> 
-      panel.prepend $('<div class="row"/>').append $('<div class="twelve columns subheader"/>').text("Loading article ...")
+   loadArticleDetails = (hidden, panel) -> 
+      loading = $('<div class="row"/>').append $('<div class="twelve columns subheader"/>').text("Loading article ...")
+      panel.prepend loading
       url = hidden.text()   
       $.get url, (article) -> 
-         panel.hide()
+         loading.hide()
          panel.prepend $('<div class="row"/>').append $('<div class="twelve columns summary"/>').text(article.domain+" - "+article.summary+" ...") 
          panel.prepend $('<div class="row"/>').append $('<div class="twelve columns subheader"/>').text(article.title) 
 
