@@ -59,13 +59,13 @@ case class ArticleWithTweets(article:Article, tweets:List[Status]) {
 
 object Article {
   
-  val twitter = (new TwitterFactory).getInstance
-  val rt = Cache.get("request_token").asInstanceOf[Option[RequestToken]] match { case Some(r:RequestToken) => r }
-  val ov = Cache.get("oauth_verifier").asInstanceOf[Option[String]] match { case Some(r:String) => r }
-  val token = twitter.getOAuthAccessToken(rt, ov)
-  println("from callback: id:"+twitter.verifyCredentials().getId()+" token:"+token.getToken+" secret:"+token.getTokenSecret)
 
   def findAll = { 
+    val twitter = (new TwitterFactory).getInstance
+    val rt = Cache.get("request_token").asInstanceOf[Option[RequestToken]] match { case Some(r:RequestToken) => r }
+    val ov = Cache.get("oauth_verifier").asInstanceOf[Option[String]] match { case Some(r:String) => r }
+    val token = twitter.getOAuthAccessToken(rt, ov)
+    println("from callback: id:"+twitter.verifyCredentials().getId()+" token:"+token.getToken+" secret:"+token.getTokenSecret)
     val tweets = twitter.getHomeTimeline(new Paging(1, 500)).iterator.toList
     println("got tweets:"+tweets.size)
     val aggregatedAndSorted = tweets.filterNot { _.getURLEntities.isEmpty }.foldLeft(Map[String, List[Status]]() withDefaultValue List[Status]()){
