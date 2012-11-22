@@ -45,7 +45,9 @@ case class Article(url:String) {
   }
 
   lazy val info = Await.result(content, 10 minute).asInstanceOf[Option[(String,String,String)]]
-  val (title, summary, domain) = info.get
+  def title= info.get._1
+  def summary = info.get._2
+  def domain = info.get._3
 }
 
 case class ArticleWithTweets(article:Article, tweets:List[Status]) {
