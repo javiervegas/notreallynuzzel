@@ -25,6 +25,7 @@ case class Article(url:String) {
         val (title, domain) = parsed.title.split("""\|""") match {
           case Array(title,domain) => (title, domain)
           case Array(title) => (title, url.replaceAll(""".+//""","").replaceAll("""/.*""",""))
+          case a:Array[String] => (a.head, a.last)
         }
         val summary = parsed.getElementsByTag("p").text match {
           case s:String if s.isEmpty => title
@@ -44,9 +45,7 @@ case class Article(url:String) {
   }
 
   lazy val info = Await.result(content, 10 minute).asInstanceOf[Option[(String,String,String)]]
-  def title = info.get._1
-  def summary = info.get._2
-  def domain = info.get._3
+  val (title, summary, domain) = info.get
 }
 
 case class ArticleWithTweets(article:Article, tweets:List[Status]) {
