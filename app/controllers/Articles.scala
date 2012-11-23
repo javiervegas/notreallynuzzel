@@ -1,5 +1,5 @@
 package controllers 
-import models.{Article,ArticleWithTweetsCollection} 
+import models.Article
 import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller} 
 
@@ -13,7 +13,20 @@ object Articles extends Controller {
   } 
 
   def details(url: String) = Action { 
-    Article.findInCacheByURL(url).map { article =>  Ok(Json.toJson(article)) }.getOrElse(NotFound) 
+    Article.findInCacheByURL(url) match {
+      case Some(article:Article) => { 
+        try {
+          Ok(Json.toJson(article)) 
+        } catch {
+          case e:Exception => {
+            println("detaild for "+url)
+            println(article)
+            UnsupportedMediaType
+          }
+        }
+      }
+      case None => NotFound 
+    }
   }
 }
 

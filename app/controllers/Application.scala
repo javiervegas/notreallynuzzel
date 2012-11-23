@@ -16,7 +16,7 @@ object Application extends Controller {
         val callback_url = "http://"+request.host+routes.Application.callback()
         println("setting callback_url to "+callback_url)
         val request_token = (new TwitterFactory).getInstance.getOAuthRequestToken(callback_url)
-        Cache.set("request_token",request_token, 60)
+        Cache.set("request_token",request_token, 6)
         Redirect(request_token.getAuthenticationURL)
       }
     }
@@ -25,7 +25,7 @@ object Application extends Controller {
   def callback = Action { request =>
     val oauth_verifier = request.queryString.get("oauth_verifier").get.mkString
     println("in callback, setting oauth_verifier to "+oauth_verifier)
-    Cache.set("oauth_verifier", request.queryString.get("oauth_verifier").get.mkString, 60) 
+    Cache.set("oauth_verifier", request.queryString.get("oauth_verifier").get.mkString, 6) 
     Redirect(routes.Application.index())
   }
   

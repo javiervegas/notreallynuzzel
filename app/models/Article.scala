@@ -18,13 +18,13 @@ case class Article(url:String) {
   implicit val ec = ExecutionContext.fromExecutorService(pool)
   val content = Future {
     try {
-      val (responseCode, headers, content) = Http(url).option(HttpOptions.connTimeout(1000)).option(HttpOptions.readTimeout(5000)).asHeadersAndParse(Http.readString)
+      val (responseCode, headers, content) = Http(url).option(HttpOptions.connTimeout(3000)).option(HttpOptions.readTimeout(15000)).asHeadersAndParse(Http.readString)
       println("downloaded "+url)
       if (responseCode==200 && headers.getOrElse("Content-Type",headers.getOrElse("Content-type","UNKNOWN")).startsWith("text")) {
         val parsed = Jsoup.parse(content)
         val (title, domain) = parsed.title.split("""\|""") match {
           case Array(title,domain) => (title, domain)
-          case Array(title) => (title, url.replaceAll(""".+//""","").replaceAll("""/.*""",""))
+          case Array(title) => (title, Article.getDomain(url))
           case a:Array[String] => (a.head, a.last)
         }
         val summary = parsed.getElementsByTag("p").text match {
@@ -50,14 +50,6 @@ case class Article(url:String) {
   def domain = info.get._3
 }
 
-case class ArticleWithTweets(article:Article, tweets:List[Status]) {
-  def title = article.title
-  def summary = article.title
-  def domain = article.title
-  def url = article.url
-  def json_url = "/articles/"+URLEncoder.encode(url,"UTF-8") //TODO: use routes.Articles/details
-}
-
 object Article {
   
 
@@ -66,15 +58,18 @@ object Article {
     val rt = Cache.get("request_token").asInstanceOf[Option[RequestToken]] match { case Some(r:RequestToken) => r }
     val ov = Cache.get("oauth_verifier").asInstanceOf[Option[String]] match { case Some(r:String) => r }
     val token = twitter.getOAuthAccessToken(rt, ov)
-    println("from callback: id:"+twitter.verifyCredentials().getId()+" token:"+token.getToken+" secret:"+token.getTokenSecret)
+    println("from callback: id:"+twitter.verifyCredentials.getId+" token:"+token.getToken+" secret:"+token.getTokenSecret)
     val tweets = twitter.getHomeTimeline(new Paging(1, 500)).iterator.toList
     println("got tweets:"+tweets.size)
     val aggregatedAndSorted = tweets.filterNot { _.getURLEntities.isEmpty }.foldLeft(Map[String, List[Status]]() withDefaultValue List[Status]()){
       (m,s) => m + (s.getURLEntities.head.getExpandedURL.toString -> (m(s.getURLEntities.head.getExpandedURL.toString) ++ List(s)) )
     }.toList.sortBy{ case (k,v) => (-v.size, -v.head.getCreatedAt.getTime) }
-    val top_articles = aggregatedAndSorted.take(20).map{ case (k,v) => ArticleWithTweets(Article.findByURL(k),v) }
-    ArticleWithTweetsCollection(top_articles)
+    val top_articles = aggregatedAndSorted.filterNot{ case (url, tw) => not_show.contains(getDomain(url)) }//.take(20)
+    top_articles.map { case (url,tw) => Article.findByURL(url) }
+    URLWithTweetsCollection(top_articles)
   } 
+
+  val not_show = List("www.flickr.com","youtu.be","instagram.com","www.youtube.com","twitpic.com","4sq.com")
 
   def findByURL(url:String) = {
     findInCacheByURL(url) match { 
@@ -86,6 +81,8 @@ object Article {
       }
     }
   }
+  
+  def getDomain(url:String) = url.replaceAll(""".+//""","").replaceAll("""/.*""","")
 
   def findInCacheByURL(url:String) = Cache.get("article-" + url).asInstanceOf[Option[Article]]
 
@@ -102,20 +99,21 @@ object Article {
 
 }
 
-case class ArticleWithTweetsCollection(awtl:List[ArticleWithTweets]) {
+case class URLWithTweetsCollection(uwtl:List[(String, List[twitter4j.Status])]) {
 
-  def size = awtl.size
+  def size = uwtl.size
 
 }
 
-object ArticleWithTweetsCollection {
+object URLWithTweetsCollection {
 
-  implicit object ArticleWithTweetsCollectionWrites extends Writes[ArticleWithTweetsCollection] { 
-    def writes(awtc:ArticleWithTweetsCollection) = Json.toJson( 
-      awtc.awtl.map { awt =>
-        val tweets = awt.tweets
+  def json_url(url:String) = "/articles/"+URLEncoder.encode(url,"UTF-8") //TODO: use routes.Articles/details
+
+  implicit object URLWithTweetsCollectionWrites extends Writes[URLWithTweetsCollection] { 
+    def writes(uwtc:URLWithTweetsCollection) = Json.toJson( 
+      uwtc.uwtl.map { case(url, tweets) =>
         Map( 
-          "json_url" -> Json.toJson(awt.json_url),
+          "json_url" -> Json.toJson(json_url(url)),
           "tweets" -> Json.toJson(tweets.map { tweet => Map(
             "tweet" -> Json.toJson(tweet.getText),
             "created_at" ->  Json.toJson(tweet.getCreatedAt.toString),
