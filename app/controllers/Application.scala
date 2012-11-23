@@ -10,8 +10,8 @@ import twitter4j.auth.RequestToken
 object Application extends Controller {
   
   def index = Action { request =>
-    Cache.get("request_token").asInstanceOf[Option[RequestToken]] match {
-      case Some(rt:RequestToken) => Ok(views.html.index()) 
+    Cache.get("twitter").asInstanceOf[Option[Twitter]] match {
+      case Some(twitter:Twitter) => Ok(views.html.index(twitter.verifyCredentials.getScreenName)) 
       case None => {
         val callback_url = "http://"+request.host+routes.Application.callback()
         println("setting callback_url to "+callback_url)
@@ -23,9 +23,12 @@ object Application extends Controller {
   }
   
   def callback = Action { request =>
-    val oauth_verifier = request.queryString.get("oauth_verifier").get.mkString
-    println("in callback, setting oauth_verifier to "+oauth_verifier)
-    Cache.set("oauth_verifier", request.queryString.get("oauth_verifier").get.mkString, 60) 
+    val twitter = (new TwitterFactory).getInstance
+    val rt = Cache.get("request_token").asInstanceOf[Option[RequestToken]] match { case Some(r:RequestToken) => r }
+    val ov = request.queryString.get("oauth_verifier").get.mkString
+    val token = twitter.getOAuthAccessToken(rt, ov)
+    println("in callback: screename:"+twitter.verifyCredentials.getScreenName+" token:"+token.getToken+" secret:"+token.getTokenSecret)
+    Cache.set("twitter", twitter, 60) 
     Redirect(routes.Application.index())
   }
   
