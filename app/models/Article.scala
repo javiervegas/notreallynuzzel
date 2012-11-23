@@ -69,7 +69,7 @@ object Article {
     URLWithTweetsCollection(top_articles)
   } 
 
-  val not_show = List("www.flickr.com","youtu.be","instagram.com","instagr.am","www.youtube.com","twitpic.com","4sq.com")
+  val not_show = List("www.flickr.com","youtu.be","instagram.com","instagr.am","flic.kr","www.youtube.com","twitpic.com","4sq.com")
 
   def findByURL(url:String) = {
     findInCacheByURL(url) match { 
