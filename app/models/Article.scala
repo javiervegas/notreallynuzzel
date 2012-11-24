@@ -52,8 +52,7 @@ case class Article(url:String) {
 object Article {
   
 
-  def findAll = { 
-    val twitter = Cache.get("twitter").asInstanceOf[Option[Twitter]] match { case Some(t:Twitter) => t }
+  def findAll(twitter:Twitter) = { 
     val tweets = twitter.getHomeTimeline(new Paging(1, 500)).iterator.toList
     println("got tweets:"+tweets.size)
     val aggregatedAndSorted = tweets.filterNot { _.getURLEntities.isEmpty }.foldLeft(Map[String, List[Status]]() withDefaultValue List[Status]()){

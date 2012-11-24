@@ -10,25 +10,33 @@ import twitter4j.auth.RequestToken
 object Application extends Controller {
   
   def index = Action { request =>
-    Cache.get("twitter").asInstanceOf[Option[Twitter]] match {
+    val uuid = request.session.get("uuid") match {
+      case Some(u:String) => u
+      case None => java.util.UUID.randomUUID.toString
+    }
+    println(uuid)
+    Cache.get(uuid+"_twitter").asInstanceOf[Option[Twitter]] match {
       case Some(twitter:Twitter) => Ok(views.html.index(twitter.verifyCredentials.getScreenName)) 
       case None => {
         val callback_url = "http://"+request.host+routes.Application.callback()
         println("setting callback_url to "+callback_url)
         val request_token = (new TwitterFactory).getInstance.getOAuthRequestToken(callback_url)
-        Cache.set("request_token",request_token, 60)
-        Redirect(request_token.getAuthenticationURL)
+        Cache.set(uuid+"_request_token",request_token, 600)
+        Redirect(request_token.getAuthenticationURL).withSession( 
+          request.session + ("uuid" -> uuid )
+        ) 
       }
     }
   }
   
   def callback = Action { request =>
+    val uuid = request.session.get("uuid").get
     val twitter = (new TwitterFactory).getInstance
-    val rt = Cache.get("request_token").asInstanceOf[Option[RequestToken]] match { case Some(r:RequestToken) => r }
+    val rt = Cache.get(uuid+"_request_token").asInstanceOf[Option[RequestToken]] match { case Some(r:RequestToken) => r }
     val ov = request.queryString.get("oauth_verifier").get.mkString
     val token = twitter.getOAuthAccessToken(rt, ov)
     println("in callback: screename:"+twitter.verifyCredentials.getScreenName+" token:"+token.getToken+" secret:"+token.getTokenSecret)
-    Cache.set("twitter", twitter, 60) 
+    Cache.set(uuid+"_twitter", twitter, 600) 
     Redirect(routes.Application.index())
   }
   
