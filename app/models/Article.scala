@@ -17,9 +17,10 @@ case class Article(url:String) {
   implicit val ec = ExecutionContext.fromExecutorService(pool)
   val content = Future {
     try {
-      val (responseCode, headers, content) = Http(url).option(HttpOptions.connTimeout(3000)).option(HttpOptions.readTimeout(15000)).asHeadersAndParse(Http.readString)
+      val (responseCode, headers, content) = Http(url).option(HttpOptions.connTimeout(30000)).option(HttpOptions.readTimeout(60000)).asHeadersAndParse(Http.readString)
+      val content_type = headers.getOrElse("Content-Type",headers.getOrElse("Content-type","UNKNOWN"))
       println("downloaded "+url)
-      if (responseCode==200 && headers.getOrElse("Content-Type",headers.getOrElse("Content-type","UNKNOWN")).startsWith("text")) {
+      if (responseCode==200 && content_type.startsWith("text")) {
         val parsed = Jsoup.parse(content)
         val (title, domain) = parsed.title.split("""\|""") match {
           case Array(title,domain) => (title, domain)
@@ -63,14 +64,14 @@ object Article {
     URLWithTweetsCollection(top_articles)
   } 
 
-  val not_show = List("www.flickr.com","youtu.be","instagram.com","instagr.am","flic.kr","www.youtube.com","twitpic.com","4sq.com")
+  val not_show = List("path.com","amzn.com","www.flickr.com","youtu.be","instagram.com","instagr.am","flic.kr","www.youtube.com","twitpic.com","4sq.com")
 
   def findByURL(url:String) = {
     findInCacheByURL(url) match { 
       case Some(article:Article) => article 
       case None => {
         val article = Article(url)
-        Cache.set("article-" + url, article, 60)
+        Cache.set("article-" + url, article, 600)
         article 
       }
     }
