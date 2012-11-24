@@ -8,7 +8,6 @@ jQuery ($) ->
             url = art["json_url"]
             hidden  = $('<div class="hidden"/>').text(url) 
             panel  = $('<div class="panel"/>') 
-            panel.hide()
             $div.append panel
             loadArticleDetails(hidden, panel)  
             $.each art["tweets"], (index, tweet) ->
@@ -25,7 +24,6 @@ jQuery ($) ->
       panel.prepend loading
       url = hidden.text()   
       $.get url, (article) -> 
-         panel.show()
          loading.hide()
          panel.prepend $('<div class="row"/>').append $('<div class="twelve columns summary"/>').text(article.domain+" - "+article.summary+" ...") 
          panel.prepend $('<div class="row"/>').append $('<div class="twelve columns subheader"/>').append $('<a/>').attr('href',article.url).text(article.title) 
