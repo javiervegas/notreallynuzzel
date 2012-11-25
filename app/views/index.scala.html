@@ -1,13 +1,11 @@
 @(screenname:String)(implicit lang: Lang) 
-@main(Messages("application.name")) { 
+@main(Messages("application.name")+" - @"+screenname) { 
 
-<div class="container eight columns"> 
   <h4>News from &#64;@screenname&#39;s friends</h4>
   <div data-list="@routes.Articles.list" 
     data-details="@routes.Articles.details("")">   
   </div>
   <h5>Give us a couple seconds, we are fetching the articles ...</h5>
-</div>
 
 } 
 
