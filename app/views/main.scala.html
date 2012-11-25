@@ -2,6 +2,8 @@
 <!DOCTYPE html> 
 <html> 
 <head> 
+  <meta charset="utf-8">
+  <meta content="width=device-width" name="viewport">
   <title>@title</title>  
   <link rel="stylesheet" type="text/css" media="screen" 
      href='@routes.Assets.at("stylesheets/foundation.css")'> 
@@ -21,14 +23,22 @@
       </a> 
   </div>
   <div class="row"> 
-    <div class="column hide-on-desktops">hide on desktops</div>
-    <div class="container eight columns">
+    <div class="container nine columns">
       <section role="main"> 
         @content  
 <!--    @debug() -->
       </section> 
     </div> 
-    <div class="three columns hide-on-desktops">hide on desktops</div>
+    <div class="three columns">
+      <div class="panel hide-for-small">
+        <h6>Responsive Box 1</h6>
+        <p>This box is not show on phones</p>
+      </div>
+      <div class="panel">
+        <h6>Responsive Box 2</h6>
+        <p>This box get pushed under main content on phones</p>
+      </div>
+    </div>
   </div> 
 </body> 
 </html>
