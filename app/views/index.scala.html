@@ -1,5 +1,5 @@
 @(screenname:String)(implicit lang: Lang) 
-@main(Messages("application.name")+" - @"+screenname) { 
+@main(screenname) { 
 
   <h5>News from &#64;@screenname&#39;s friends</h5>
   <div data-list="@routes.Articles.list" 

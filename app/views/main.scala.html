@@ -1,10 +1,10 @@
-@(title: String)(content: Html)(implicit lang: Lang)  
+@(screenname: String)(content: Html)(implicit lang: Lang)  
 <!DOCTYPE html> 
 <html> 
 <head> 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
-  <title>@title</title>  
+  <title>@Messages("application.name") - &#64;@screenname</title>  
   <link rel="stylesheet" type="text/css" media="screen" 
      href='@routes.Assets.at("stylesheets/foundation.css")'> 
   <link rel="stylesheet" type="text/css" media="screen" 
@@ -38,8 +38,8 @@
     <!-- On small devices this column is hidden -->
     <aside class="three columns">
       <div class="panel">
+        <h5>Hello, &#64;@screenname!</h5>
         <a href="#"><img src="http://placehold.it/300x240&text=[img]" /></a>
-        <h5><a href="#">Your Name</a></h5>
 
         <dl class="vertical tabs">
           <dd><a href="#">Section 1</a></dd>
