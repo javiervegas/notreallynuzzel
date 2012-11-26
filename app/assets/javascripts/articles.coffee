@@ -16,11 +16,7 @@ jQuery ($) ->
             $.each art["tweets"], (index, tweet) ->
               twrow = $('<div class="row"/>')
               twrow.append $('<div class="two columns mobile-one"/>').html("<img src="+tweet["profile_image"]+" alt="+tweet["user_name"]+"/>")
-              twrow.append $('<div class="ten columns"/>').append $('<p/>').html("<a href="+tweet["profile_image"]+">"+tweet["user_name"]+"</a> - "+tweet["tweet"]+"<br/>"+tweet["created_at"])
-              menu = $('<ul class="inline-list"/>')
-              menu.append $('<li/>').append $('<a/>').attr('href','').text("Reply")
-              menu.append $('<li/>').append $('<a/>').attr('href','').text("Retweet")
-              twrow.append menu
+              twrow.append $('<div class="ten columns"/>').append $('<p/>').html("<a href="+tweet["profile_image"]+">"+tweet["user_name"]+"</a> - "+tweet["tweet"]+"<br/>"+tweet["created_at"]+' <a href="">Reply</a> <a href="">Retweet</a>')
               content.append twrow
 
    articleDetailsUrl = (url) -> 

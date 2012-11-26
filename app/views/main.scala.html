@@ -16,12 +16,10 @@
 
   <!-- Header and Nav -->
 
-  <div class="row">
-    <div class="twelve columns">
-      <div class="panel">
-        <a href="@routes.Application.index()"><h1>@Messages("application.name")</h1></a>
-      </div>
-    </div>
+  <div class="container top-bar home-border header">
+    <a href="@routes.Application.index()"> 
+      @Messages("application.name") 
+    </a> 
   </div>
 
   <!-- End Header and Nav -->
@@ -34,31 +32,7 @@
     <div class="six columns push-three container">
       @content  
     </div>
-<!--  </div>
-  <div class="row">
-    <div class="six columns push-three">
-      <div class="row">
-        <div class="two columns mobile-one"><img src="http://placehold.it/80x80&text=[img]" /></div>
-        <div class="ten columns">
-          <strong>Some Person said</strong>
-          <p>Bacon ipsum dolor sit amet nulla ham qui sint exercitation eiusmod commodo, chuck duis velit. Aute in reprehenderit, dolore aliqua non est magna in labore pig pork biltong.</p>
-          <ul class="inline-list">
-            <li><a href="">Reply</a></li>
-            <li><a href="">Share</a></li>
-          </ul>
-          <h6>Comments</h6>
-          <div class="row">
-            <div class="two columns mobile-one"><img src="http://placehold.it/50x50&text=[img]" /></div>
-            <div class="ten columns"><p>Bacon ipsum dolor sit amet nulla ham qui sint exercitation eiusmod commodo, chuck duis velit. Aute in reprehenderit</p></div>
-          </div>
-        </div>
-      </div>
 
-      <hr />
-
-    </div>
-
--->
     <!-- Nav Sidebar -->
     <!-- This is source ordered to be pulled to the left on larger screens -->
     <div class="three columns pull-six">

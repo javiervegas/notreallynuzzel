@@ -29,8 +29,8 @@ case class Article(url:String) {
         }
         val summary = parsed.getElementsByTag("p").text match {
           case s:String if s.isEmpty => title
-          case s:String if (s.length < 250) => s
-          case s:String => s.substring(0,250)
+          case s:String if (s.length < 150) => s
+          case s:String => s.substring(0,150)
         } 
         Some(title, summary, domain)
       } else {
