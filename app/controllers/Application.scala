@@ -9,14 +9,19 @@ import twitter4j.auth.RequestToken
 
 object Application extends Controller {
   
-  def index = Action { request =>
+  def index = show(None)
+  def profile(name:String) = show(Some(name))
+  def show(name:Option[String]) = Action { request =>
     val uuid = request.session.get("uuid") match {
       case Some(u:String) => u
       case None => java.util.UUID.randomUUID.toString
     }
     println(uuid)
     Cache.get(uuid+"_twitter").asInstanceOf[Option[Twitter]] match {
-      case Some(twitter:Twitter) => Ok(views.html.index(twitter.verifyCredentials.getScreenName)) 
+      case Some(twitter:Twitter) => Ok(views.html.index(name match {
+        case None => "your"
+        case Some(name:String) => "@"+name+"'s"
+      }, twitter.verifyCredentials.getScreenName)) 
       case None => {
         val callback_url = "http://"+request.host+routes.Application.callback()
         println("setting callback_url to "+callback_url)

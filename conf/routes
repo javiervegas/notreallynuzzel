@@ -9,5 +9,7 @@ GET     /callback                   controllers.Application.callback
 GET /articles	controllers.Articles.list
 GET /articles/:url	controllers.Articles.details(url: String) 
 
+GET /:name                          controllers.Application.profile(name:String)
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

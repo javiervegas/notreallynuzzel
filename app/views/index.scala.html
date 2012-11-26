@@ -1,7 +1,7 @@
-@(screenname:String)(implicit lang: Lang) 
+@(owner:String, screenname:String)(implicit lang: Lang) 
 @main(screenname) { 
 
-  <h5>News from &#64;@screenname&#39;s friends</h5>
+  <h5>News from @owner friends</h5>
   <div data-list="@routes.Articles.list" 
     data-details="@routes.Articles.details("")">   
   </div>
