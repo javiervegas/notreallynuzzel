@@ -1,5 +1,5 @@
-@(owner:String, screenname:String)(implicit lang: Lang) 
-@main(screenname) { 
+@(owner:String, screenname:String, list:Set[String])(implicit lang: Lang) 
+@main(screenname, list) { 
 
   <h5>News from @owner friends</h5>
   <div data-list="@routes.Articles.list" 

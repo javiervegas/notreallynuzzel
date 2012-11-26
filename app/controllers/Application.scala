@@ -17,11 +17,11 @@ object Application extends Controller {
       case None => java.util.UUID.randomUUID.toString
     }
     println(uuid)
-    Cache.get(uuid+"_twitter").asInstanceOf[Option[Twitter]] match {
+    Cache.getAs[Twitter](uuid+"_twitter") match {
       case Some(twitter:Twitter) => Ok(views.html.index(name match {
         case None => "your"
         case Some(name:String) => "@"+name+"'s"
-      }, twitter.verifyCredentials.getScreenName)) 
+      }, twitter.verifyCredentials.getScreenName, Cache.getAs[Map[String,Twitter]]("users").get.keySet)) 
       case None => {
         val callback_url = "http://"+request.host+routes.Application.callback()
         println("setting callback_url to "+callback_url)
@@ -37,11 +37,15 @@ object Application extends Controller {
   def callback = Action { request =>
     val uuid = request.session.get("uuid").get
     val twitter = (new TwitterFactory).getInstance
-    val rt = Cache.get(uuid+"_request_token").asInstanceOf[Option[RequestToken]] match { case Some(r:RequestToken) => r }
+    val rt = Cache.getAs[RequestToken](uuid+"_request_token").get
     val ov = request.queryString.get("oauth_verifier").get.mkString
     val token = twitter.getOAuthAccessToken(rt, ov)
     println("in callback: screename:"+twitter.verifyCredentials.getScreenName+" token:"+token.getToken+" secret:"+token.getTokenSecret)
-    Cache.set(uuid+"_twitter", twitter, 600) 
+    Cache.set(uuid+"_twitter", twitter) 
+    Cache.set("users", (Cache.getAs[Map[String,Twitter]]("users") match { 
+      case Some(m:Map[String,Twitter]) => m
+      case None => Map[String,Twitter]()
+    }) + (twitter.verifyCredentials.getScreenName -> twitter ) )
     Redirect(routes.Application.index())
   }
   

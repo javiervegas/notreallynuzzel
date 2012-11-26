@@ -1,4 +1,4 @@
-@(screenname: String)(content: Html)(implicit lang: Lang)  
+@(screenname:String, list:Set[String])(content:Html)(implicit lang:Lang)  
 <!DOCTYPE html> 
 <html> 
 <head> 
@@ -39,8 +39,12 @@
     <aside class="three columns">
       <div class="panel">
         <h5>Hello, &#64;@screenname!</h5>
+        <ul>
+          @for(user <- list) {  
+            <li><a href="@routes.Application.profile(user)">@user</a></li> 
+          }
+        </ul>
         <a href="#"><img src="http://placehold.it/300x240&text=[img]" /></a>
-
         <dl class="vertical tabs">
           <dd><a href="#">Section 1</a></dd>
           <dd><a href="#">Section 2</a></dd>
