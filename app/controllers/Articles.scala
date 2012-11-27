@@ -9,8 +9,12 @@ import twitter4j._
 object Articles extends Controller { 
 
   def list = Action { implicit request => 
-    val uuid = request.session.get("uuid").get
-    val twitter = Cache.get(uuid+"_twitter").asInstanceOf[Option[Twitter]] match { case Some(t:Twitter) => t }
+    //val uuid = request.session.get("uuid").get
+    //val twitter = Cache.getAs[Twitter](uuid+"_twitter").get
+    val twitter = Cache.getAs[Map[String,Twitter]]("users").get.get(request.session.get("name").get) match {
+      case Some(t:Twitter) => t
+      case None => Cache.getAs[Twitter](request.session.get("uuid").get+"_twitter").get
+    }
     val articles = Article.findAll(twitter)
     println(articles.size.toString+" articles found")
     //Ok(views.html.articles.list(articles)) 
