@@ -24,7 +24,7 @@ object Application extends Controller {
       case Some(twitter:Twitter) => Ok(views.html.index(name match {
         case Some(name:String) => "@"+name+"'s"
         case None => "your"
-      }, twitter.verifyCredentials.getScreenName, Cache.getAs[Map[String,Twitter]]("users").get.keySet-"test")).withSession( 
+      }, twitter.verifyCredentials.getScreenName, Cache.getAs[Map[String,Twitter]]("users").get.keySet.sorted-"test")).withSession( 
         request.session + ("name" -> (name match {
           case Some(name:String) => name
           case None => twitter.verifyCredentials.getScreenName
