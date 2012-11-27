@@ -19,7 +19,7 @@ case class Article(url:String) {
     try {
       val (responseCode, headers, content) = Http(url).option(HttpOptions.connTimeout(30000)).option(HttpOptions.readTimeout(60000)).asHeadersAndParse(Http.readString)
       val content_type = headers.getOrElse("Content-Type",headers.getOrElse("Content-type","UNKNOWN"))
-      println("downloaded "+url)
+      play.api.Logger.info("downloaded "+url)
       if (responseCode==200 && content_type.startsWith("text")) {
         val parsed = Jsoup.parse(content)
         val (title, domain) = parsed.title.split("""\|""") match {
@@ -38,7 +38,7 @@ case class Article(url:String) {
       }
     } catch {
       case e:Exception => { 
-        println(url+" -> "+e.toString)
+        play.api.Logger.warn(url+" -> "+e.toString)
         None
       }
     }
@@ -55,7 +55,7 @@ object Article {
 
   def findAll(twitter:Twitter) = { 
     val tweets = twitter.getHomeTimeline(new Paging(1, 500)).iterator.toList
-    println("got tweets:"+tweets.size)
+    play.api.Logger.info("got tweets:"+tweets.size)
     val aggregatedAndSorted = tweets.filterNot { _.getURLEntities.isEmpty }.foldLeft(Map[String, List[Status]]() withDefaultValue List[Status]()){
       (m,s) => m + (s.getURLEntities.head.getExpandedURL.toString -> (m(s.getURLEntities.head.getExpandedURL.toString) ++ List(s)) )
     }.toList.sortBy{ case (k,v) => (-v.size, -v.head.getCreatedAt.getTime) }

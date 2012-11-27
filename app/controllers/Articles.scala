@@ -16,7 +16,7 @@ object Articles extends Controller {
       case None => Cache.getAs[Twitter](request.session.get("uuid").get+"_twitter").get
     }
     val articles = Article.findAll(twitter)
-    println(articles.size.toString+" articles found")
+    play.api.Logger.info(articles.size.toString+" articles found")
     //Ok(views.html.articles.list(articles)) 
     Ok(Json.toJson(articles))
   } 
@@ -28,8 +28,7 @@ object Articles extends Controller {
           Ok(Json.toJson(article)) 
         } catch {
           case e:Exception => {
-            println("detaild for "+url)
-            println(article)
+            play.api.Logger.warn(url+" -> "+e.toString)
             UnsupportedMediaType
           }
         }
