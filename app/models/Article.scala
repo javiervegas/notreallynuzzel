@@ -71,7 +71,7 @@ object Article {
       case Some(article:Article) => article 
       case None => {
         val article = Article(url)
-        Cache.set("article-" + url, article, 600)
+        Cache.set("article-" + url, article, 60*60*5)
         article 
       }
     }
