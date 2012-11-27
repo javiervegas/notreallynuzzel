@@ -58,7 +58,7 @@ object Article {
     play.api.Logger.info("got tweets:"+tweets.size)
     val aggregatedAndSorted = tweets.filterNot { _.getURLEntities.isEmpty }.foldLeft(Map[String, List[Status]]() withDefaultValue List[Status]()){
       (m,s) => m + (s.getURLEntities.head.getExpandedURL.toString -> (m(s.getURLEntities.head.getExpandedURL.toString) ++ List(s)) )
-    }.toList.sortBy{ case (k,v) => (-v.size, -v.head.getCreatedAt.getTime) }
+    }.toList.sortBy{ case (k,v) => (-v.map{ s => s.getUser }.distinct.size, -v.head.getCreatedAt.getTime) }
     val top_articles = aggregatedAndSorted.filterNot{ case (url, tw) => not_show.contains(getDomain(url)) }//.take(20)
     top_articles.map { case (url,tw) => Article.findByURL(url) }
     URLWithTweetsCollection(top_articles)
