@@ -39,6 +39,7 @@
     <aside class="three columns">
       <div class="panel">
         <h5>Hello, &#64;@screenname!</h5>
+        Check out these friends’ Nuzzel feeds:
         <ul>
           @for(user <- list) {  
             <li><a href="@routes.Application.profile(user)">@user</a></li> 
